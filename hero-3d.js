@@ -3853,3 +3853,21 @@ new IntersectionObserver(e=>{ seen=e[e.length-1].isIntersecting; }).observe(stag
 function loop(now){ if(seen){ if(playing) tcur=((now-t0)/1000)%L; frame(tcur); } requestAnimationFrame(loop); }
 frame(tcur); requestAnimationFrame(loop);
 })();
+
+;(function(){
+var hero=document.querySelectorAll("section[data-hero-intro]");
+if(!hero.length||document.querySelector(".hero-reel"))return;
+var VOLUME=.2,base="/inovetix-clone/";
+var s=document.createElement("section");
+s.className="hero-reel";
+s.innerHTML='<div class="hero-reel-frame"><video src="'+base+'videos/hero/reel.mp4" poster="'+base+'images/hero/reel-poster.jpg" loop muted playsinline preload="metadata"></video><button type="button" class="hero-reel-btn">Unmute</button></div>';
+hero[hero.length-1].after(s);
+var v=s.querySelector("video"),b=s.querySelector("button"),events=["click","keydown","touchend"];
+v.volume=VOLUME;
+function label(){b.textContent=v.muted?"Unmute":"Mute"}
+function stop(){events.forEach(function(e){window.removeEventListener(e,gesture,true)})}
+function gesture(e){stop();if(e.target&&e.target.closest&&e.target.closest(".hero-reel-btn"))return;v.muted=false;label()}
+events.forEach(function(e){window.addEventListener(e,gesture,true)});
+b.addEventListener("click",function(){stop();v.muted=!v.muted;label()});
+new IntersectionObserver(function(e){if(e[e.length-1].isIntersecting)v.play().catch(function(){});else v.pause()},{threshold:.35}).observe(s);
+})();
