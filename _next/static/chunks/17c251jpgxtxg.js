@@ -12,6 +12,16 @@ var timer=setInterval(function(){
   if(!Object.keys(button).some(function(k){return k.indexOf("__reactProps")===0}))return;
   clearInterval(timer);
   [].forEach.call(document.querySelectorAll("section[data-hero-intro] video"),function(v){v.volume=VOLUME});
+  var list=[video.currentSrc,video.currentSrc.replace("showreel.mp4","showreel-dark.mp4")],turn=0;
+  var next=document.createElement("video");
+  next.preload="auto";next.src=list[1];next.load();
+  video.loop=false;
+  video.addEventListener("ended",function(){
+    turn=1-turn;
+    video.removeAttribute("poster");
+    video.src=list[turn];
+    video.play().catch(function(){});
+  });
   function unmute(){
     var b=section.querySelector('button[aria-label="Unmute video"]');
     if(b)b.click();
