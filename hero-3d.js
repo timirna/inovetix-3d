@@ -3719,7 +3719,9 @@ const deckApi={};
   const fit=()=>{ view.style.height=slides[cur].offsetHeight+"px"; };
   const label=()=>{ vb.textContent=v.muted?"Unmute":"Mute"; };
   const safePlay=()=>v.play().catch(()=>{ v.muted=true; label(); v.play().catch(()=>{}); });
-  const go=i=>{ cur=(i+2)%2; track.style.marginLeft=cur?"-100%":"0";
+  const mark=()=>document.querySelectorAll("section[data-hero-intro]").forEach(s=>s.classList.toggle("is-video",cur===1));
+  deckApi.mark=mark;
+  const go=i=>{ cur=(i+2)%2; mark(); track.style.marginLeft=cur?"-100%":"0";
     slides.forEach((el,n)=>{ el.inert=n!==cur; el.setAttribute("aria-hidden",n!==cur); });
     dots.forEach((d,n)=>d.setAttribute("aria-current",n===cur)); fit();
     if(cur){ v.currentTime=0; safePlay(); } else { v.pause(); if(deckApi.restart) deckApi.restart(); } };
@@ -3736,11 +3738,11 @@ const deckApi={};
   deckApi.init=()=>go(0);
 })();
 const wide=window.matchMedia("(min-width: 1024px)");
-const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s&&deck.parentElement!==s) s.appendChild(deck); };
+const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s&&deck.parentElement!==s){ s.appendChild(deck); if(deckApi.cv) s.prepend(deckApi.cv); deckApi.mark(); } };
 place(); deckApi.init(); wide.addEventListener("change",place); window.addEventListener("resize",place);
 let renderer; try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); }catch(e){ stage.remove(); return; }
-renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); renderer.setClearColor(0x000000,0);
-stage.prepend(renderer.domElement);
+renderer.setPixelRatio(Math.min(1.25,window.devicePixelRatio||1)); renderer.setClearColor(0x000000,0);
+renderer.domElement.className="hero3d-bg"; deck.parentElement.prepend(renderer.domElement); deckApi.cv=renderer.domElement;
 const RED=new THREE.Color("#FE3F56"), PINK=new THREE.Color("#FFB9B1"), LAV=new THREE.Color("#CBA2FF"), INK2=new THREE.Color("#1B2150");
 const scene=new THREE.Scene(); scene.fog=new THREE.Fog(0x080D28,14,30);
 const FR=7.2; const cam=new THREE.OrthographicCamera(-FR*16/18,FR*16/18,FR/2,-FR/2,0.1,100);
@@ -3809,19 +3811,19 @@ gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(.35,"rgba(255,255,255,
 const pMat=new THREE.PointsMaterial({size:7,sizeAttenuation:false,map:new THREE.CanvasTexture(spr),vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
 const pts=new THREE.Points(pGeo,pMat); scene.add(pts);
 // ambient field: fills the canvas around the main grid and fades out toward its edges
-const fade=d=>Math.max(0,Math.min(1,1-(d-5)/9));
-{ const FN=15, lp=[], lc=[], c=new THREE.Color();
-  const seg=(x1,z1,x2,z2)=>{ const f=fade(Math.hypot((x1+x2)/2,(z1+z2)/2)); if(f<=0) return; c.copy(LAV).multiplyScalar(.24*f); lp.push(x1,-.03,z1,x2,-.03,z2); lc.push(c.r,c.g,c.b,c.r,c.g,c.b); };
+const fade=d=>Math.max(0,Math.min(1,1-(d-7)/17));
+{ const FN=24, lp=[], lc=[], c=new THREE.Color();
+  const seg=(x1,z1,x2,z2)=>{ const f=fade(Math.hypot((x1+x2)/2,(z1+z2)/2)); if(f<=0) return; c.copy(LAV).multiplyScalar(.11*f); lp.push(x1,-.03,z1,x2,-.03,z2); lc.push(c.r,c.g,c.b,c.r,c.g,c.b); };
   for(let i=-FN;i<FN;i++)for(let k=-FN;k<=FN;k++){ seg(i*SP,k*SP,(i+1)*SP,k*SP); seg(k*SP,i*SP,k*SP,(i+1)*SP); }
   const g=new THREE.BufferGeometry(); g.setAttribute("position",new THREE.Float32BufferAttribute(lp,3)); g.setAttribute("color",new THREE.Float32BufferAttribute(lc,3));
   const l=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,fog:false})); l.frustumCulled=false; scene.add(l); }
-const farCells=[]; for(let i=-11;i<11;i++)for(let k=-11;k<11;k++){ const x=(i+.5)*SP, z=(k+.5)*SP; if(Math.abs(x)<4.2&&Math.abs(z)<4.2) continue; const d=Math.hypot(x,z), f=fade(d); if(f>.05&&rnd()<.2) farCells.push({x,z,f,hotCell:rnd()<.5}); }
+const farCells=[]; for(let i=-20;i<20;i++)for(let k=-20;k<20;k++){ const x=(i+.5)*SP, z=(k+.5)*SP; if(Math.abs(x)<4.2&&Math.abs(z)<4.2) continue; const d=Math.hypot(x,z), f=fade(d); if(f>.05&&rnd()<.2) farCells.push({x,z,f,hotCell:rnd()<.5}); }
 const farMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false,fog:false});
 const farTiles=new THREE.InstancedMesh(tileGeo,farMat,farCells.length); farTiles.frustumCulled=false;
-{ const fc=new THREE.Color(); farCells.forEach((f,i)=>{ m4.makeTranslation(f.x,-.02,f.z); farTiles.setMatrixAt(i,m4); fc.copy(f.hotCell?RED:LAV).multiplyScalar((f.hotCell?.3:.14)*f.f); farTiles.setColorAt(i,fc); }); }
+{ const fc=new THREE.Color(); farCells.forEach((f,i)=>{ m4.makeTranslation(f.x,-.02,f.z); farTiles.setMatrixAt(i,m4); fc.copy(f.hotCell?RED:LAV).multiplyScalar((f.hotCell?.14:.06)*f.f); farTiles.setColorAt(i,fc); }); }
 scene.add(farTiles);
-const DN=240, dGeo=new THREE.BufferGeometry(), dPos=new Float32Array(DN*3), dCol=new Float32Array(DN*3), dust=[];
-for(let i=0;i<DN;i++){ const x=(rnd()-.5)*22, z=(rnd()-.5)*22, y=.2+rnd()*5, c=rnd()<.55?RED:(rnd()<.5?PINK:LAV), f=.25+.45*fade(Math.hypot(x,z)*.8);
+const DN=420, dGeo=new THREE.BufferGeometry(), dPos=new Float32Array(DN*3), dCol=new Float32Array(DN*3), dust=[];
+for(let i=0;i<DN;i++){ const x=(rnd()-.5)*38, z=(rnd()-.5)*38, y=.2+rnd()*5, c=rnd()<.55?RED:(rnd()<.5?PINK:LAV), f=.14+.3*fade(Math.hypot(x,z)*.8);
   dust.push({y,ph:rnd()*6.283}); dPos.set([x,y,z],i*3); dCol.set([c.r*f,c.g*f,c.b*f],i*3); }
 dGeo.setAttribute("position",new THREE.BufferAttribute(dPos,3)); dGeo.setAttribute("color",new THREE.BufferAttribute(dCol,3));
 const dMat=new THREE.PointsMaterial({size:3.4,sizeAttenuation:false,map:pMat.map,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false});
@@ -3842,9 +3844,13 @@ const nLines=new THREE.LineSegments(nGeo,new THREE.LineBasicMaterial({color:LAV,
 const composer=new THREE.EffectComposer(renderer); composer.addPass(new THREE.RenderPass(scene,cam));
 const bloom=new THREE.UnrealBloomPass(new THREE.Vector2(1,1),0.85,0.55,0.18); composer.addPass(bloom);
 
-function size(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false); composer.setSize(w,h); const asp=w/h, F=asp<1.5?8.6:FR;
-  cam.left=-F*asp/2; cam.right=F*asp/2; cam.top=F/2; cam.bottom=-F/2; cam.updateProjectionMatrix(); }
-new ResizeObserver(size).observe(stage); size();
+let cw=1, ch=1, ox=0, oy=0;
+function size(){ const c=renderer.domElement.getBoundingClientRect(), s=stage.getBoundingClientRect(); if(!s.width||!c.width) return;
+  renderer.setSize(c.width,c.height,false); composer.setSize(c.width,c.height);
+  const F=s.width/s.height<1.5?8.6:FR, u=F/s.height, cx=s.left+s.width/2, cy=s.top+s.height/2;
+  cam.left=(c.left-cx)*u; cam.right=(c.right-cx)*u; cam.top=(cy-c.top)*u; cam.bottom=(cy-c.bottom)*u; cam.updateProjectionMatrix();
+  cw=c.width; ch=c.height; ox=c.left-s.left; oy=c.top-s.top; }
+const ro=new ResizeObserver(size); ro.observe(stage); document.querySelectorAll("section[data-hero-intro]").forEach(s=>ro.observe(s)); size();
 
 const nv=new THREE.Vector3(), L=12, v=new THREE.Vector3(), steps=[...wrap.querySelectorAll("li")];
 function frame(t){
@@ -3884,11 +3890,10 @@ function frame(t){
   mGeo.attributes.position.needsUpdate=true; mGeo.attributes.color.needsUpdate=true;
   mesh.material.opacity=0.55*E(1.8,2.4,t)*(1-E(4.4,5.2,t)); mesh.visible=mesh.material.opacity>0.002;
   // nodes orbit
-  const rect=stage.getBoundingClientRect();
   nodes.forEach((n,i)=>{ const on=E(8.4+i*0.15,9.3+i*0.15,t)*(1-E(10.9,11.7,t)); const a=n.a0+(t-8.4)*0.22, r=3.05;
     n.m.position.set(Math.cos(a)*r,-0.6+0.9*on,Math.sin(a)*r); n.m.scale.setScalar(0.001+on); n.m.material.opacity=on; n.m.children[0].material.opacity=.5*on;
     npos.set([n.m.position.x,n.m.position.y,n.m.position.z,0,0.95,0],i*6);
-    v.copy(n.m.position); v.y+=0.45; v.project(cam); n.el.style.left=((v.x+1)/2*rect.width)+"px"; n.el.style.top=((1-v.y)/2*rect.height)+"px"; n.el.style.opacity=on; });
+    v.copy(n.m.position); v.y+=0.45; v.project(cam); n.el.style.left=((v.x+1)/2*cw+ox)+"px"; n.el.style.top=((1-v.y)/2*ch+oy)+"px"; n.el.style.opacity=on; });
   nGeo.attributes.position.needsUpdate=true; nLines.material.opacity=0.35*E(8.8,9.6,t)*(1-E(10.9,11.7,t));
   // steps + hud
   const s=t<4?0:t<8.4?1:2; steps.forEach((el,i)=>el.classList.toggle("on",i===s));
@@ -3898,7 +3903,7 @@ let playing=true, seen=true, t0=performance.now(), tcur=0;
 const btn=stage.querySelector(".hero3d-btn");
 btn.addEventListener("click",()=>{ playing=!playing; btn.textContent=playing?"Pause":"Play"; t0=performance.now()-tcur*1000; });
 new IntersectionObserver(e=>{ seen=e[e.length-1].isIntersecting; }).observe(stage);
-deckApi.restart=()=>{ t0=performance.now(); tcur=0; };
+deckApi.restart=()=>{ t0=performance.now(); tcur=0; size(); setTimeout(size,650); };
 function loop(now){ if(seen){ if(playing){ const nt=Math.max(0,((now-t0)/1000)%L); if(tcur>L-1&&nt<tcur) deckApi.next(); tcur=nt; } frame(tcur); } requestAnimationFrame(loop); }
 frame(tcur); requestAnimationFrame(loop);
 })();
