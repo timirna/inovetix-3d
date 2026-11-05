@@ -2,18 +2,18 @@
   "name": "Inovetix",
   "short_name": "Inovetix",
   "description": "Digital Agency & Software Engineering",
-  "start_url": "/",
+  "start_url": "/inovetix-clone/",
   "display": "standalone",
   "background_color": "#080D28",
   "theme_color": "#080D28",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/inovetix-clone/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/inovetix-clone/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
