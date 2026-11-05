@@ -3701,8 +3701,14 @@
 const MARK=["M22.6023 2.81865L15.1437 10.2772C14.4057 11.0152 13.4463 11.6195 11.7442 11.6195L9.6547 11.6241C8.95358 11.6241 8.21557 11.8225 7.59748 12.4405L2.81881 17.2238C2.64815 17.3945 2.37139 17.3945 2.20072 17.2238L0.129663 15.1481C-0.0410034 14.9775 -0.0410034 14.7007 0.129663 14.5301L2.30681 12.3529C3.24317 11.4165 4.2026 11.0106 5.54487 11.0106L7.51445 11.006C8.71834 11.0014 9.47942 10.5678 10.0606 9.98664L19.9131 0.129495C20.0838 -0.0411713 20.3606 -0.0411713 20.5312 0.129495L22.6069 2.20517C22.773 2.37122 22.773 2.64798 22.6023 2.81865Z","M26.9241 7.1403L21.2229 12.8415C20.4849 13.5795 19.5255 14.1837 17.8234 14.1837L15.7339 14.1884C15.0328 14.1884 14.2948 14.3867 13.6767 15.0048L7.14065 21.5455C6.96998 21.7161 6.69323 21.7161 6.52256 21.5455L4.4515 19.4744C4.28083 19.3037 4.28083 19.027 4.4515 18.8563L8.39067 14.9171C9.32703 13.9808 10.2864 13.5749 11.6287 13.5749L13.5983 13.5703C14.8022 13.5657 15.5587 13.1321 16.1445 12.5509L24.235 4.45115C24.4056 4.28048 24.6824 4.28048 24.8531 4.45115L26.9241 6.52221C27.0948 6.69287 27.0948 6.96963 26.9241 7.1403Z","M31.2459 11.4623L27.3022 15.4015C26.5641 16.1395 25.6047 16.7438 23.9027 16.7438L21.8132 16.7484C21.112 16.7484 20.374 16.9467 19.7559 17.5648L11.4579 25.8675C11.2872 26.0382 11.0104 26.0382 10.8398 25.8675L8.76872 23.7964C8.59805 23.6258 8.59805 23.349 8.76872 23.1783L14.4699 17.4772C15.4063 16.5408 16.3657 16.1349 17.7079 16.1349L19.6775 16.1303C20.8814 16.1257 21.6425 15.6921 22.2237 15.1109L28.5614 8.77778C28.7321 8.60712 29.0088 8.60712 29.1795 8.77778L31.2506 10.8488C31.4166 11.0149 31.4166 11.2917 31.2459 11.4623Z","M35.5681 15.7843L33.3864 17.9615C32.6484 18.6995 31.6889 19.3037 29.9869 19.3037L27.8974 19.3083C27.1963 19.3083 26.4582 19.5067 25.8401 20.1248L15.7847 30.1849C15.614 30.3555 15.3372 30.3555 15.1666 30.1849L13.0955 28.1138C12.9248 27.9431 12.9248 27.6664 13.0955 27.4957L20.5541 20.0325C21.4905 19.0962 22.4499 18.6902 23.7921 18.6902L25.7617 18.6856C26.9656 18.681 27.7267 18.2474 28.3079 17.6663L32.8836 13.0952C33.0543 12.9245 33.331 12.9245 33.5017 13.0952L35.5727 15.1662C35.6604 15.2539 35.7019 15.3553 35.7019 15.4753C35.6973 15.5952 35.6512 15.6967 35.5681 15.7843Z"];
 const stage=document.createElement("div"); stage.className="hero3d";
 stage.innerHTML='<div class="hero3d-labels"></div><button class="hero3d-btn" type="button">Pause</button>';
+const wrap=document.createElement("div"); wrap.className="hero3d-wrap";
+wrap.innerHTML='<div class="hero3d-copy"><div class="hero3d-eyebrow">How it works</div><h2>From scattered data to one working system</h2><p>We bring your data, brand and product together, build the AI and web layers on top, then keep it running and growing.</p><ol>'
++'<li><span class="n">01</span><b>Assemble data</b><span>Your data, content and brand in one place.</span></li>'
++'<li><span class="n">02</span><b>Build the system</b><span>AI, brand and web designed and built as one.</span></li>'
++'<li><span class="n">03</span><b>Launch and grow</b><span>Agents, sites and apps that keep improving.</span></li></ol></div>';
+wrap.appendChild(stage);
 const wide=window.matchMedia("(min-width: 1024px)");
-const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s) s.appendChild(stage); };
+const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s) s.appendChild(wrap); };
 place(); wide.addEventListener("change",place);
 let renderer; try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); }catch(e){ stage.remove(); return; }
 renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); renderer.setClearColor(0x000000,0);
@@ -3794,7 +3800,7 @@ function size(){ const w=stage.clientWidth,h=stage.clientHeight; renderer.setSiz
   cam.left=-FR*asp/2; cam.right=FR*asp/2; cam.top=FR/2; cam.bottom=-FR/2; cam.updateProjectionMatrix(); }
 new ResizeObserver(size).observe(stage); size();
 
-const nv=new THREE.Vector3(), L=12, v=new THREE.Vector3();
+const nv=new THREE.Vector3(), L=12, v=new THREE.Vector3(), steps=[...wrap.querySelectorAll("li")];
 function frame(t){
   // camera: isometric with a slow drift that loops
   const ang=Math.PI/4+0.08*Math.sin(t/L*6.283), R=14; cam.position.set(Math.cos(ang)*R,10.5,Math.sin(ang)*R); cam.lookAt(0,1.35,0);
@@ -3837,6 +3843,7 @@ function frame(t){
     v.copy(n.m.position); v.y+=0.45; v.project(cam); n.el.style.left=((v.x+1)/2*rect.width)+"px"; n.el.style.top=((1-v.y)/2*rect.height)+"px"; n.el.style.opacity=on; });
   nGeo.attributes.position.needsUpdate=true; nLines.material.opacity=0.35*E(8.8,9.6,t)*(1-E(10.9,11.7,t));
   // steps + hud
+  const s=t<4?0:t<8.4?1:2; steps.forEach((el,i)=>el.classList.toggle("on",i===s));
   composer.render();
 }
 let playing=true, seen=true, t0=performance.now(), tcur=0;
