@@ -3708,8 +3708,8 @@ wrap.innerHTML='<div class="hero3d-copy"><div class="hero3d-eyebrow">How it work
 +'<li><i class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#a9a9b2" d="M11 17 5 18l-2 6 6-1.500zM15 21l-1 6-6 2 1.500-6z"/><path fill="#ececf0" fill-rule="evenodd" d="M29 3C20 3 13 8 10 17l5 5c9-3 14-10 14-19zM20.500 8.500a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></i><span class="n">03</span><div class="tx"><b>Launch and grow</b><span>Agents, sites and apps that keep improving.</span></div></li>'+'</ol></div>';
 wrap.appendChild(stage);
 const wide=window.matchMedia("(min-width: 1024px)");
-const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s) s.appendChild(wrap); };
-place(); wide.addEventListener("change",place);
+const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s&&wrap.parentElement!==s) s.appendChild(wrap); };
+place(); wide.addEventListener("change",place); window.addEventListener("resize",place);
 let renderer; try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); }catch(e){ stage.remove(); return; }
 renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); renderer.setClearColor(0x000000,0);
 stage.prepend(renderer.domElement);
