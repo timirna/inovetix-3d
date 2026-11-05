@@ -2,7 +2,7 @@
 ;(function(){
 if(typeof document==="undefined"||window.__heroSound)return;
 window.__heroSound=1;
-var VOLUME=.2,tries=0,events=["click","keydown","touchend"];
+var VOLUME=.2,SPEED=.7,tries=0,events=["click","keydown","touchend"];
 var timer=setInterval(function(){
   if(++tries>100){clearInterval(timer);return}
   var section=[].slice.call(document.querySelectorAll("section[data-hero-intro]")).filter(function(s){return s.offsetWidth>0})[0];
@@ -11,7 +11,7 @@ var timer=setInterval(function(){
   if(!video||!button||video.paused)return;
   if(!Object.keys(button).some(function(k){return k.indexOf("__reactProps")===0}))return;
   clearInterval(timer);
-  [].forEach.call(document.querySelectorAll("section[data-hero-intro] video"),function(v){v.volume=VOLUME});
+  [].forEach.call(document.querySelectorAll("section[data-hero-intro] video"),function(v){v.volume=VOLUME;v.defaultPlaybackRate=SPEED;v.playbackRate=SPEED});
   var list=[video.currentSrc,video.currentSrc.replace("showreel.mp4","showreel-dark.mp4")],turn=0;
   var next=document.createElement("video");
   next.preload="auto";next.src=list[1];next.load();
@@ -20,6 +20,7 @@ var timer=setInterval(function(){
     turn=1-turn;
     video.removeAttribute("poster");
     video.src=list[turn];
+    video.playbackRate=SPEED;
     video.play().catch(function(){});
   });
   function unmute(){
