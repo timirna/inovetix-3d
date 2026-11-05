@@ -3808,6 +3808,24 @@ const spr=document.createElement("canvas"); spr.width=spr.height=64; const sx=sp
 gr.addColorStop(0,"rgba(255,255,255,1)"); gr.addColorStop(.35,"rgba(255,255,255,.85)"); gr.addColorStop(1,"rgba(255,255,255,0)"); sx.fillStyle=gr; sx.fillRect(0,0,64,64);
 const pMat=new THREE.PointsMaterial({size:7,sizeAttenuation:false,map:new THREE.CanvasTexture(spr),vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
 const pts=new THREE.Points(pGeo,pMat); scene.add(pts);
+// ambient field: fills the canvas around the main grid and fades out toward its edges
+const fade=d=>Math.max(0,Math.min(1,1-(d-5)/9));
+{ const FN=15, lp=[], lc=[], c=new THREE.Color();
+  const seg=(x1,z1,x2,z2)=>{ const f=fade(Math.hypot((x1+x2)/2,(z1+z2)/2)); if(f<=0) return; c.copy(LAV).multiplyScalar(.24*f); lp.push(x1,-.03,z1,x2,-.03,z2); lc.push(c.r,c.g,c.b,c.r,c.g,c.b); };
+  for(let i=-FN;i<FN;i++)for(let k=-FN;k<=FN;k++){ seg(i*SP,k*SP,(i+1)*SP,k*SP); seg(k*SP,i*SP,k*SP,(i+1)*SP); }
+  const g=new THREE.BufferGeometry(); g.setAttribute("position",new THREE.Float32BufferAttribute(lp,3)); g.setAttribute("color",new THREE.Float32BufferAttribute(lc,3));
+  const l=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,fog:false})); l.frustumCulled=false; scene.add(l); }
+const farCells=[]; for(let i=-11;i<11;i++)for(let k=-11;k<11;k++){ const x=(i+.5)*SP, z=(k+.5)*SP; if(Math.abs(x)<4.2&&Math.abs(z)<4.2) continue; const d=Math.hypot(x,z), f=fade(d); if(f>.05&&rnd()<.2) farCells.push({x,z,f,hotCell:rnd()<.5}); }
+const farMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false,fog:false});
+const farTiles=new THREE.InstancedMesh(tileGeo,farMat,farCells.length); farTiles.frustumCulled=false;
+{ const fc=new THREE.Color(); farCells.forEach((f,i)=>{ m4.makeTranslation(f.x,-.02,f.z); farTiles.setMatrixAt(i,m4); fc.copy(f.hotCell?RED:LAV).multiplyScalar((f.hotCell?.3:.14)*f.f); farTiles.setColorAt(i,fc); }); }
+scene.add(farTiles);
+const DN=240, dGeo=new THREE.BufferGeometry(), dPos=new Float32Array(DN*3), dCol=new Float32Array(DN*3), dust=[];
+for(let i=0;i<DN;i++){ const x=(rnd()-.5)*22, z=(rnd()-.5)*22, y=.2+rnd()*5, c=rnd()<.55?RED:(rnd()<.5?PINK:LAV), f=.25+.45*fade(Math.hypot(x,z)*.8);
+  dust.push({y,ph:rnd()*6.283}); dPos.set([x,y,z],i*3); dCol.set([c.r*f,c.g*f,c.b*f],i*3); }
+dGeo.setAttribute("position",new THREE.BufferAttribute(dPos,3)); dGeo.setAttribute("color",new THREE.BufferAttribute(dCol,3));
+const dMat=new THREE.PointsMaterial({size:3.4,sizeAttenuation:false,map:pMat.map,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false});
+const dPts=new THREE.Points(dGeo,dMat); dPts.frustumCulled=false; scene.add(dPts);
 // rising lines
 const LN=60, lGeo=new THREE.BufferGeometry(), lpos=new Float32Array(LN*6); lGeo.setAttribute("position",new THREE.BufferAttribute(lpos,3));
 const lines=new THREE.LineSegments(lGeo,new THREE.LineBasicMaterial({color:LAV,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false})); scene.add(lines);
@@ -3832,6 +3850,8 @@ const nv=new THREE.Vector3(), L=12, v=new THREE.Vector3(), steps=[...wrap.queryS
 function frame(t){
   // camera: isometric with a slow drift that loops
   const ang=Math.PI/4+0.08*Math.sin(t/L*6.283), R=14; cam.position.set(Math.cos(ang)*R,10.5,Math.sin(ang)*R); cam.lookAt(0,0.1,0);
+  dust.forEach((d,i)=>{ dPos[i*3+1]=d.y+.28*Math.sin(t/L*6.283+d.ph); }); dGeo.attributes.position.needsUpdate=true;
+  dMat.size=3.4*renderer.getPixelRatio()*Math.max(.7,stage.clientWidth/900); farMat.opacity=.62+.16*Math.sin(t/L*12.566);
   // tiles: on at start, sink while the system builds, return at the end
   const tileOn=1-E(4,5.2,t)+E(11,12,t); tileMat.opacity=0.25+0.75*tileOn;
   for(const h of hot){ const y=-0.35*(1-tileOn); m4.makeTranslation(h.x,y,h.z); tiles.setMatrixAt(h.k,m4);

@@ -110,3 +110,4 @@ section[data-hero-intro]{padding-top:5.5rem;padding-bottom:2.5rem}
 .hero-slide-video{padding-bottom:.75rem}
 .hero-reel-frame{max-width:min(100%,calc((100svh - 15.5rem)*16/9))}
 .hero-deck-nav{margin-bottom:.75rem}
+.hero3d canvas{-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent),linear-gradient(180deg,transparent,#000 6%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent),linear-gradient(180deg,transparent,#000 6%,#000 92%,transparent);-webkit-mask-composite:source-in;mask-composite:intersect}
