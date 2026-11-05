@@ -3702,7 +3702,7 @@ const MARK=["M22.6023 2.81865L15.1437 10.2772C14.4057 11.0152 13.4463 11.6195 11
 const stage=document.createElement("div"); stage.className="hero3d";
 stage.innerHTML='<div class="hero3d-labels"></div><button class="hero3d-btn" type="button">Pause</button>';
 const wrap=document.createElement("div"); wrap.className="hero3d-wrap";
-wrap.innerHTML='<div class="hero3d-copy"><div class="hero3d-eyebrow">How it works</div><h2>From scattered data to one working system</h2><p>We bring your data, brand and product together, build the AI and web layers on top, then keep it running and growing.</p><ol>'
+wrap.innerHTML='<div class="hero3d-copy"><div class="hero3d-eyebrow">How it works</div><h2>From scattered data to one <em>working system</em></h2><p>We bring your data, brand and product together, build the AI and web layers on top, then keep it running and growing.</p><ol>'
 +'<li><span class="n">01</span><b>Assemble data</b><span>Your data, content and brand in one place.</span></li>'
 +'<li><span class="n">02</span><b>Build the system</b><span>AI, brand and web designed and built as one.</span></li>'
 +'<li><span class="n">03</span><b>Launch and grow</b><span>Agents, sites and apps that keep improving.</span></li></ol></div>';
@@ -3715,7 +3715,7 @@ renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); renderer.setClea
 stage.prepend(renderer.domElement);
 const RED=new THREE.Color("#FE3F56"), PINK=new THREE.Color("#FFB9B1"), LAV=new THREE.Color("#CBA2FF"), INK2=new THREE.Color("#1B2150");
 const scene=new THREE.Scene(); scene.fog=new THREE.Fog(0x080D28,14,30);
-const FR=6.6; const cam=new THREE.OrthographicCamera(-FR*16/18,FR*16/18,FR/2,-FR/2,0.1,100);
+const FR=7.2; const cam=new THREE.OrthographicCamera(-FR*16/18,FR*16/18,FR/2,-FR/2,0.1,100);
 scene.add(new THREE.AmbientLight(0x8a80c0,0.55));
 const key=new THREE.DirectionalLight(0xffffff,0.9); key.position.set(4,10,6); scene.add(key);
 const rim=new THREE.PointLight(0xFE3F56,1.4,12); rim.position.set(0,2.2,0); scene.add(rim);
@@ -3803,7 +3803,7 @@ new ResizeObserver(size).observe(stage); size();
 const nv=new THREE.Vector3(), L=12, v=new THREE.Vector3(), steps=[...wrap.querySelectorAll("li")];
 function frame(t){
   // camera: isometric with a slow drift that loops
-  const ang=Math.PI/4+0.08*Math.sin(t/L*6.283), R=14; cam.position.set(Math.cos(ang)*R,10.5,Math.sin(ang)*R); cam.lookAt(0,0.7,0);
+  const ang=Math.PI/4+0.08*Math.sin(t/L*6.283), R=14; cam.position.set(Math.cos(ang)*R,10.5,Math.sin(ang)*R); cam.lookAt(0,0.1,0);
   // tiles: on at start, sink while the system builds, return at the end
   const tileOn=1-E(4,5.2,t)+E(11,12,t); tileMat.opacity=0.25+0.75*tileOn;
   for(const h of hot){ const y=-0.35*(1-tileOn); m4.makeTranslation(h.x,y,h.z); tiles.setMatrixAt(h.k,m4);
