@@ -51,26 +51,12 @@ section{padding-inline:var(--edge)}
 .hero .muted{color:var(--muted)}
 .hero-side{color:var(--muted);font-size:17px}
 
-.collage{position:relative;height:clamp(640px,92vw,1120px);margin-bottom:clamp(40px,6vw,80px);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:25% 33.333%;background-position:var(--edge) 0;overflow:hidden;border-block:1px solid var(--line)}
-.tile{position:absolute;margin:0;overflow:hidden;border-radius:14px;background:var(--wash);box-shadow:0 18px 40px rgba(10,11,20,.08)}
-.tile img{width:100%;height:100%;object-fit:cover}
-.t1{left:4%;top:7%;width:22%;aspect-ratio:4/3}
-.t2{right:4%;top:6%;width:24%;aspect-ratio:4/3}
-.t3{left:7%;top:37%;width:17%;aspect-ratio:5/4}
-.t4{left:3%;bottom:6%;width:25%;aspect-ratio:4/3}
-.t5{right:6%;top:39%;width:17%;aspect-ratio:5/4}
-.t6{right:3%;bottom:5%;width:24%;aspect-ratio:4/3}
-.metric{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:clamp(12px,1.6vw,22px)}
-.metric b{font:500 clamp(26px,3.3vw,52px)/1 var(--head);letter-spacing:-.03em}
-.metric span{color:var(--muted);font-size:clamp(11px,1vw,14px);line-height:1.3}
-.metric.grad{background:var(--grad);color:#fff}
-.metric.grad span{color:rgba(255,255,255,.88)}
-.collage-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding-inline:30%;text-align:center}
-.collage-center h2{font-size:clamp(28px,4vw,66px)}
-.play{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;border:0;border-radius:999px;background:var(--ink);color:#fff;font:500 16px var(--head);cursor:pointer;transition:transform .25s}
-.play:hover{transform:scale(1.04)}
-.play i{width:0;height:0;border-block:6px solid transparent;border-left:10px solid #fff}
-
+.reel-sec{position:relative;padding:0;margin-bottom:clamp(40px,6vw,80px);background:#fff}
+.reel-video{display:block;width:100%;height:min(56.25vw,100svh);object-fit:contain;background:#fff;cursor:pointer}
+.reel-tag{position:absolute;left:var(--edge);top:50%;padding:8px 14px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px var(--line,#e4e4ea);transform:translateY(-50%);font:500 15px var(--head);color:var(--ink)}
+.reel-sound{position:absolute;right:var(--edge);top:50%;display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:0 20px;border:0;border-radius:999px;background:var(--ink);color:#fff;font:500 15px var(--head);cursor:pointer;transform:translateY(calc(-50% + var(--y,0px)))}
+.reel-sound i{width:0;height:0;border-block:6px solid transparent;border-left:10px solid #fff}
+.reel-sound.on i{width:10px;height:12px;border:0;border-inline:3px solid #fff}
 .outcomes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:1320px;margin:0 auto clamp(90px,12vw,170px)}
 .outcomes article{display:flex;flex-direction:column;min-height:clamp(260px,28vw,400px);padding:24px;border-radius:16px;background:var(--wash)}
 .outcomes small{color:var(--muted)}
@@ -163,23 +149,15 @@ details p{max-width:64ch;padding-bottom:22px;color:var(--muted)}
 .ask input::placeholder{color:var(--muted)}
 .ask button{width:36px;height:36px;border:0;border-radius:50%;background:var(--ink);color:#fff;font-size:17px;cursor:pointer}
 
-.reel{width:min(92vw,1280px);padding:0;border:0;border-radius:16px;background:#000;overflow:visible}
-.reel::backdrop{background:rgba(10,11,20,.8)}
-.reel video{width:100%;border-radius:16px}
-.reel .close{position:absolute;top:-46px;right:0;width:38px;height:38px;border:0;border-radius:50%;background:#fff;color:var(--ink);font-size:22px;cursor:pointer}
-
 @media (max-width:1023px){
   .links{display:none}
   .hero{grid-template-columns:minmax(0,1fr)}
-  .collage-center{padding-inline:20%}
 }
 @media (max-width:767px){
   .btn.ghost{display:none}
   .hero{min-height:82svh}
-  .collage{height:auto;padding-block:32px;background-size:50% 20%}
-  .tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .tile{position:static;width:auto;aspect-ratio:4/3}
-  .collage-center{position:static;padding:32px 0 8px}
+  .reel-tag{display:none}
+  .reel-sound{top:auto;right:12px;bottom:12px;min-height:40px;padding:0 14px;font-size:14px;transform:none}
   .outcomes,.stats,.vs,.grid,.track ol{grid-template-columns:minmax(0,1fr)}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .outcomes article{min-height:190px}

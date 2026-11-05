@@ -2,17 +2,40 @@
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   var phone = matchMedia('(max-width: 767px)').matches
 
-  // Video with sound
-  var dialog = document.querySelector('.reel')
-  var video = dialog.querySelector('video')
-  document.querySelector('[data-play]').addEventListener('click', function () {
-    dialog.showModal()
-    video.volume = 0.6
-    video.play().catch(function () {})
+  // The showreel plays in the page: silently once it is in view or under the cursor
+  var reel = document.querySelector('.reel-video')
+  var sound = document.querySelector('[data-sound]')
+  var label = sound.querySelector('span')
+  var held = false
+  function run() { if (!held) reel.play().catch(function () {}) }
+  new IntersectionObserver(function (e) {
+    if (e[e.length - 1].isIntersecting) run(); else reel.pause()
+  }, { threshold: 0.25 }).observe(reel)
+  reel.addEventListener('mouseenter', run)
+  // The sound button glides along with the cursor, as long as a real mouse is in use
+  if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
+    var area = reel.parentNode
+    var glide = function (y) { gsap.to(sound, { '--y': y + 'px', duration: 0.6, ease: 'power3.out', overwrite: true }) }
+    area.addEventListener('mousemove', function (e) {
+      var box = area.getBoundingClientRect()
+      var room = box.height / 2 - 40
+      glide(Math.max(-room, Math.min(room, e.clientY - box.top - box.height / 2)))
+    })
+    area.addEventListener('mouseleave', function () { glide(0) })
+  }
+  reel.addEventListener('click', function () {
+    held = !reel.paused
+    if (held) reel.pause(); else run()
   })
-  document.querySelector('[data-close]').addEventListener('click', function () { dialog.close() })
-  dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close() })
-  dialog.addEventListener('close', function () { video.pause() })
+  sound.addEventListener('click', function () {
+    var on = reel.muted
+    reel.muted = !on
+    held = false
+    if (on) { reel.currentTime = 0; reel.volume = 0.8 }
+    sound.classList.toggle('on', on)
+    label.textContent = on ? 'Mute' : 'Play with sound'
+    run()
+  })
 
   // Bottom box opens an email with what the visitor typed
   document.querySelector('[data-ask]').addEventListener('submit', function (e) {
@@ -60,12 +83,6 @@
   })
 
   if (!phone) {
-    document.querySelectorAll('[data-speed]').forEach(function (tile) {
-      gsap.to(tile, {
-        y: Number(tile.dataset.speed), ease: 'none',
-        scrollTrigger: { trigger: '.collage', start: 'top bottom', end: 'bottom top', scrub: true }
-      })
-    })
     gsap.utils.toArray('.case').slice(0, -1).forEach(function (card, i, all) {
       gsap.to(card, {
         scale: 0.95, ease: 'none',
