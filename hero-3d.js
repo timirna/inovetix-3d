@@ -3707,9 +3707,37 @@ wrap.innerHTML='<div class="hero3d-copy"><div class="hero3d-eyebrow">How it work
 +'<li><i class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#8f8f99" d="M16 16 29 22.5 16 29 3 22.5z"/><path fill="#b9b9c2" d="M16 10.5 29 17 16 23.5 3 17z"/><path fill="#ececf0" d="M16 4 29 10.5 16 17 3 10.5z"/></svg></i><span class="n">02</span><div class="tx"><b>Build the system</b><span>AI, brand and web designed and built as one.</span></div></li>'
 +'<li><i class="ic"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#a9a9b2" d="M11 17 5 18l-2 6 6-1.500zM15 21l-1 6-6 2 1.500-6z"/><path fill="#ececf0" fill-rule="evenodd" d="M29 3C20 3 13 8 10 17l5 5c9-3 14-10 14-19zM20.500 8.500a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg></i><span class="n">03</span><div class="tx"><b>Launch and grow</b><span>Agents, sites and apps that keep improving.</span></div></li>'+'</ol></div>';
 wrap.appendChild(stage);
+const deck=document.createElement("div"); deck.className="hero-deck"; deck.setAttribute("role","region"); deck.setAttribute("aria-roledescription","carousel"); deck.setAttribute("aria-label","Inovetix highlights");
+deck.innerHTML='<div class="hero-deck-view"><div class="hero-deck-track"><div class="hero-slide"></div><div class="hero-slide hero-slide-video"><div class="hero-reel-frame"><video src="/inovetix-clone/videos/hero/reel.mp4" poster="/inovetix-clone/images/hero/reel-poster.jpg" muted playsinline preload="metadata"></video><button type="button" class="hero-reel-btn">Unmute</button></div></div></div></div>'
++'<div class="hero-deck-nav"><button type="button" class="hero-deck-arrow" aria-label="Previous slide">&#8592;</button><button type="button" class="hero-deck-dot" aria-label="How it works"></button><button type="button" class="hero-deck-dot" aria-label="Video"></button><button type="button" class="hero-deck-arrow" aria-label="Next slide">&#8594;</button></div>';
+deck.querySelector(".hero-slide").appendChild(wrap);
+const deckApi={};
+(()=>{
+  const view=deck.querySelector(".hero-deck-view"), track=deck.querySelector(".hero-deck-track"), slides=[...deck.querySelectorAll(".hero-slide")];
+  const v=deck.querySelector("video"), vb=deck.querySelector(".hero-reel-btn"), dots=[...deck.querySelectorAll(".hero-deck-dot")], arrows=deck.querySelectorAll(".hero-deck-arrow");
+  const events=["click","keydown","touchend"]; let cur=0, inView=true; v.volume=.2;
+  const fit=()=>{ view.style.height=slides[cur].offsetHeight+"px"; };
+  const label=()=>{ vb.textContent=v.muted?"Unmute":"Mute"; };
+  const safePlay=()=>v.play().catch(()=>{ v.muted=true; label(); v.play().catch(()=>{}); });
+  const go=i=>{ cur=(i+2)%2; track.style.marginLeft=cur?"-100%":"0";
+    slides.forEach((el,n)=>{ el.inert=n!==cur; el.setAttribute("aria-hidden",n!==cur); });
+    dots.forEach((d,n)=>d.setAttribute("aria-current",n===cur)); fit();
+    if(cur){ v.currentTime=0; safePlay(); } else { v.pause(); if(deckApi.restart) deckApi.restart(); } };
+  deckApi.next=()=>{ if(inView&&cur===0) go(1); };
+  arrows[0].addEventListener("click",()=>go(cur-1)); arrows[1].addEventListener("click",()=>go(cur+1));
+  dots.forEach((d,n)=>d.addEventListener("click",()=>go(n)));
+  v.addEventListener("ended",()=>go(0));
+  const stop=()=>events.forEach(e=>window.removeEventListener(e,gesture,true));
+  function gesture(e){ stop(); if(e.target&&e.target.closest&&e.target.closest(".hero-reel-btn")) return; v.muted=false; label(); }
+  events.forEach(e=>window.addEventListener(e,gesture,true));
+  vb.addEventListener("click",()=>{ stop(); v.muted=!v.muted; label(); });
+  new ResizeObserver(fit).observe(slides[0]); new ResizeObserver(fit).observe(slides[1]);
+  new IntersectionObserver(e=>{ inView=e[e.length-1].isIntersecting; if(!inView) v.pause(); else if(cur===1) safePlay(); },{threshold:.3}).observe(deck);
+  deckApi.init=()=>go(0);
+})();
 const wide=window.matchMedia("(min-width: 1024px)");
-const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s&&wrap.parentElement!==s) s.appendChild(wrap); };
-place(); wide.addEventListener("change",place); window.addEventListener("resize",place);
+const place=()=>{ const s=document.querySelectorAll("section[data-hero-intro]")[wide.matches?1:0]; if(s&&deck.parentElement!==s) s.appendChild(deck); };
+place(); deckApi.init(); wide.addEventListener("change",place); window.addEventListener("resize",place);
 let renderer; try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); }catch(e){ stage.remove(); return; }
 renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); renderer.setClearColor(0x000000,0);
 stage.prepend(renderer.domElement);
@@ -3850,24 +3878,7 @@ let playing=true, seen=true, t0=performance.now(), tcur=0;
 const btn=stage.querySelector(".hero3d-btn");
 btn.addEventListener("click",()=>{ playing=!playing; btn.textContent=playing?"Pause":"Play"; t0=performance.now()-tcur*1000; });
 new IntersectionObserver(e=>{ seen=e[e.length-1].isIntersecting; }).observe(stage);
-function loop(now){ if(seen){ if(playing) tcur=((now-t0)/1000)%L; frame(tcur); } requestAnimationFrame(loop); }
+deckApi.restart=()=>{ t0=performance.now(); tcur=0; };
+function loop(now){ if(seen){ if(playing){ const nt=Math.max(0,((now-t0)/1000)%L); if(tcur>L-1&&nt<tcur) deckApi.next(); tcur=nt; } frame(tcur); } requestAnimationFrame(loop); }
 frame(tcur); requestAnimationFrame(loop);
-})();
-
-;(function(){
-var hero=document.querySelectorAll("section[data-hero-intro]");
-if(!hero.length||document.querySelector(".hero-reel"))return;
-var VOLUME=.2,base="/inovetix-clone/";
-var s=document.createElement("section");
-s.className="hero-reel";
-s.innerHTML='<div class="hero-reel-frame"><video src="'+base+'videos/hero/reel.mp4" poster="'+base+'images/hero/reel-poster.jpg" loop muted playsinline preload="metadata"></video><button type="button" class="hero-reel-btn">Unmute</button></div>';
-hero[hero.length-1].after(s);
-var v=s.querySelector("video"),b=s.querySelector("button"),events=["click","keydown","touchend"];
-v.volume=VOLUME;
-function label(){b.textContent=v.muted?"Unmute":"Mute"}
-function stop(){events.forEach(function(e){window.removeEventListener(e,gesture,true)})}
-function gesture(e){stop();if(e.target&&e.target.closest&&e.target.closest(".hero-reel-btn"))return;v.muted=false;label()}
-events.forEach(function(e){window.addEventListener(e,gesture,true)});
-b.addEventListener("click",function(){stop();v.muted=!v.muted;label()});
-new IntersectionObserver(function(e){if(e[e.length-1].isIntersecting)v.play().catch(function(){});else v.pause()},{threshold:.35}).observe(s);
 })();
