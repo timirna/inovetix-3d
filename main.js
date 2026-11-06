@@ -65,3 +65,21 @@
   }, { threshold: 0.2 }).observe(svg)
 })()
 
+// Collage tiles drift at different speeds as the visitor scrolls
+;(function () {
+  var box = document.querySelector('.collage')
+  var tiles = [].slice.call(box.querySelectorAll('[data-speed]'))
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !matchMedia('(min-width:901px)').matches) return
+  var queued = false
+  function move() {
+    queued = false
+    var r = box.getBoundingClientRect()
+    var p = Math.max(0, Math.min(1, (innerHeight - r.top) / (innerHeight + r.height)))
+    tiles.forEach(function (t) { t.style.translate = '0 ' + (Number(t.dataset.speed) * p).toFixed(1) + 'px' })
+  }
+  addEventListener('scroll', function () {
+    if (!queued) { queued = true; requestAnimationFrame(move) }
+  }, { passive: true })
+  move()
+})()
+
