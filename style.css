@@ -32,26 +32,21 @@ h3{font-size:var(--h3);line-height:1.1}
 
 /* Opening: the Inovetix symbol itself, at page scale */
 .opening{position:relative;overflow:hidden}
-.strands{position:absolute;top:clamp(84px,9vh,120px);right:var(--edge);width:min(46vw,760px);height:auto;overflow:visible}
-.nav,.hero,.reel{position:relative}
+.strands{position:absolute;inset:0 0 auto;width:100%;height:100svh;min-height:640px;-webkit-mask-image:linear-gradient(#000 84%,transparent);mask-image:linear-gradient(#000 84%,transparent)}
+.opening::before{content:"";position:absolute;inset:0 0 auto;z-index:1;height:100svh;min-height:640px;background:linear-gradient(90deg,#fff 0,#fff 26%,rgba(255,255,255,.72) 44%,rgba(255,255,255,0) 66%);pointer-events:none}
+.strand{will-change:transform}
+.nav,.hero,.reel{position:relative;z-index:2}
 .nav{display:flex;align-items:center;gap:36px;padding:22px var(--edge)}
 .nav nav{display:flex;gap:28px;margin-inline-end:auto}
 .nav nav a{text-decoration:none}
 .nav nav a:hover{color:#C4162E}
-.hero{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:min(calc(100svh - 88px),912px);padding:40px var(--edge) clamp(40px,6vw,72px)}
+.hero{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:max(calc(100svh - 88px),552px);padding:40px var(--edge) clamp(40px,6vw,72px)}
 .hero h1{position:relative;max-width:9em;font-size:clamp(46px,6.6vw,112px);line-height:1;letter-spacing:-.04em}
 .hero p{max-width:30em;margin:24px 0 28px;color:var(--wine)}
 
-@media (prefers-reduced-motion:no-preference){
-  html{scroll-behavior:smooth}
-  .strands path{animation:slide 1.2s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i)*.1s)}
-}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-}
-@keyframes slide{from{opacity:0;transform:translate(-5px,5px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 
-.reel{padding:0 var(--edge) var(--gap)}
+.reel{padding:clamp(32px,4vw,64px) var(--edge) var(--gap);background:var(--white)}
 .frame{position:relative;max-width:1400px;margin-inline:auto;overflow:hidden;border-radius:clamp(10px,1.6vw,22px);background:var(--white);box-shadow:0 0 0 1px var(--lilac)}
 .frame video{width:100%;aspect-ratio:16/9;cursor:pointer}
 .sound{position:absolute;right:clamp(10px,1.6vw,24px);bottom:clamp(10px,1.6vw,24px);min-height:44px;padding:0 18px;border:0;border-radius:8px;background:var(--night);color:var(--white);font:inherit;font-weight:600;cursor:pointer}
@@ -134,9 +129,9 @@ details p{max-width:42em;padding-bottom:22px;color:var(--wine)}
 @media (max-width:900px){
   .nav nav{display:none}
   .nav .btn{margin-inline-start:auto}
-  .strands{top:92px;right:var(--edge);width:min(74vw,480px)}
+  .opening::before{background:linear-gradient(0deg,#fff 0,#fff 42%,rgba(255,255,255,.75) 56%,rgba(255,255,255,0) 72%)}
   .proof b{font-size:34px}
-  .hero{min-height:calc(100svh - 88px);padding-top:min(72vw,450px)}
+  .hero{padding-top:40svh}
   .about,.services,.faq{grid-template-columns:1fr}
   .services>h2{position:static}
   .proof{grid-template-columns:1fr 1fr}

@@ -25,3 +25,43 @@
     run()
   })
 })()
+
+// The logo symbol: its strands gather on load, then drift, follow the cursor and part on scroll
+;(function () {
+  var svg = document.querySelector('.strands')
+  var strands = [].slice.call(svg.querySelectorAll('.strand'))
+  var shine = document.getElementById('shine')
+  var calm = matchMedia('(prefers-reduced-motion: reduce)').matches
+  var drift = calm ? 0.45 : 1.1
+  var start = null, frame = null
+  var aim = 0, lean = 0
+
+  addEventListener('mousemove', function (e) { aim = (e.clientX / innerWidth - 0.5) * (calm ? 0 : 2) })
+
+  function draw(now) {
+    if (start === null) start = now
+    var t = (now - start) / 1000
+    var e = calm ? 1 : 1 - Math.pow(1 - Math.min(1, t / 1.6), 4)
+    var part = Math.min(1.2, scrollY / innerHeight)
+    lean += (aim - lean) * 0.06
+    strands.forEach(function (s, i) {
+      var along = Math.sin(t * 0.55 + i * 1.1) * drift
+        + (i - 1.5) * part * 5
+        + lean * (0.6 + i * 0.35)
+        + (1 - e) * (i % 2 ? 26 : -26)
+      var d = along * 0.7071
+      s.setAttribute('transform', 'translate(' + d.toFixed(3) + ' ' + (-d).toFixed(3) + ')')
+      s.style.opacity = e
+    })
+    var run = ((t * 7) % 70) - 20
+    shine.setAttribute('gradientTransform', 'translate(' + run.toFixed(2) + ' ' + (-run).toFixed(2) + ')')
+    frame = requestAnimationFrame(draw)
+  }
+
+  new IntersectionObserver(function (entries) {
+    var on = entries[entries.length - 1].isIntersecting
+    if (on && frame === null) frame = requestAnimationFrame(draw)
+    if (!on && frame !== null) { cancelAnimationFrame(frame); frame = null }
+  }).observe(svg)
+})()
+
