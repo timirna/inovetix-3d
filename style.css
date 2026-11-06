@@ -32,8 +32,7 @@ h3{font-size:var(--h3);line-height:1.1}
 
 /* Opening: the Inovetix symbol itself, at page scale */
 .opening{position:relative;overflow:hidden}
-.strands{position:absolute;inset:0 0 auto;width:100%;height:100svh;min-height:640px;-webkit-mask-image:linear-gradient(#000 84%,transparent);mask-image:linear-gradient(#000 84%,transparent)}
-.opening::before{content:"";position:absolute;inset:0 0 auto;z-index:1;height:100svh;min-height:640px;background:linear-gradient(90deg,#fff 0,#fff 26%,rgba(255,255,255,.72) 44%,rgba(255,255,255,0) 66%);pointer-events:none}
+.strands{position:absolute;inset:0 0 auto;width:100%;height:100svh;min-height:640px;overflow:visible;opacity:.35}
 .strand{will-change:transform}
 .nav,.intro,.reel{position:relative;z-index:2}
 .nav{display:flex;align-items:center;gap:36px;padding:22px var(--edge)}
@@ -127,7 +126,6 @@ details p{max-width:42em;padding-bottom:22px;color:var(--wine)}
 @media (max-width:900px){
   .nav nav{display:none}
   .nav .btn{margin-inline-start:auto}
-  .opening::before{background:linear-gradient(0deg,#fff 0,#fff 42%,rgba(255,255,255,.75) 56%,rgba(255,255,255,0) 72%)}
   .proof b{font-size:34px}
   .intro{padding-top:40svh}
   .frame video{height:auto;min-height:0;aspect-ratio:16/9}
