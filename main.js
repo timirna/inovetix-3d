@@ -42,7 +42,7 @@
     if (start === null) start = now
     var t = (now - start) / 1000
     var e = calm ? 1 : 1 - Math.pow(1 - Math.min(1, t / 1.6), 4)
-    var part = Math.min(1.2, scrollY / innerHeight)
+    var part = Math.max(0, Math.min(1.2, -svg.getBoundingClientRect().top / innerHeight))
     lean += (aim - lean) * 0.06
     strands.forEach(function (s, i) {
       var along = Math.sin(t * 0.55 + i * 1.1) * drift
@@ -62,6 +62,6 @@
     var on = entries[entries.length - 1].isIntersecting
     if (on && frame === null) frame = requestAnimationFrame(draw)
     if (!on && frame !== null) { cancelAnimationFrame(frame); frame = null }
-  }).observe(svg)
+  }, { threshold: 0.2 }).observe(svg)
 })()
 
