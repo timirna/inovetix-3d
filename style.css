@@ -32,7 +32,7 @@ h3{font-size:var(--h3);line-height:1.1}
 
 /* Opening: the Inovetix symbol itself, at page scale */
 .opening{position:relative;overflow:hidden}
-.strands{position:absolute;inset:0 0 auto;width:100%;height:100svh;min-height:640px;overflow:visible;opacity:.35}
+.strands{position:absolute;inset:0 0 auto;width:100%;height:100svh;min-height:640px;opacity:.35;-webkit-mask-image:linear-gradient(transparent,#000 14%);mask-image:linear-gradient(transparent,#000 14%)}
 .strand{will-change:transform}
 .nav,.intro,.reel{position:relative;z-index:2}
 .nav{display:flex;align-items:center;gap:36px;padding:22px var(--edge)}
