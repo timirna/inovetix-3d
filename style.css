@@ -25,9 +25,9 @@ h3{font-size:var(--h3);line-height:1.1}
 .skip{position:absolute;left:12px;top:-60px;z-index:9;padding:10px 16px;background:var(--white);color:var(--night)}
 .skip:focus{top:12px}
 
-.btn{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:8px;background:var(--coral);color:var(--night);font-family:"DM Sans",system-ui,sans-serif;font-weight:600;text-decoration:none;transition:background .2s}
-.btn:hover{background:var(--peach)}
-.contact .btn:hover{background:var(--white)}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:8px;background:var(--coral);color:var(--white);font-family:"DM Sans",system-ui,sans-serif;font-weight:600;text-decoration:none;transition:background .2s}
+.btn:hover{background:#C4162E}
+.contact .btn:hover{background:var(--white);color:var(--night)}
 .btn-big{min-height:56px;padding:0 28px}
 
 /* Opening: the Inovetix symbol itself, at page scale */
